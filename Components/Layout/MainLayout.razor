@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+
+<div class="app-layout @(Theme.IsDarkMode ? "" : "theme-light")">
+    <div class="sidebar-wrapper">
+        <NavSidebar />
+    </div>
+
+    <main class="main-content">
+        <div class="top-header">
+            <TopHeader />
+        </div>
+
+        <article class="content-body">
+            @Body
+        </article>
+    </main>
+</div>

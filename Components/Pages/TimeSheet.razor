@@ -1,0 +1,175 @@
+﻿@page "/timesheet"
+@using Jira_Time_Manager.Components.Shared.Icons
+
+<section class="timesheet-container">
+    
+    <fieldset class="role-toggle-bar">
+        <legend class="sr-only">View Mode</legend>
+        <strong>Test Mode: </strong>
+        <button class="btn-ghost-small" @onclick="SwitchToEmployeeView">Employee View</button>
+        <button class="btn-ghost-small" @onclick="SwitchToManagerView">Manager View</button>
+    </fieldset>
+
+    @if (IsManagerView)
+    {
+        <header class="manager-panel">
+            <label for="employeeSelect" class="panel-label">Select Team Member:</label>
+            <select id="employeeSelect" class="inline-input select-employee-lg" @onchange="OnManagerEmployeeSelected">
+                <option value="0">-- Choose an Employee --</option>
+                @foreach (var emp in AllEmployees)
+                {
+                    <option value="@emp.EmployeeId">@emp.FirstName @emp.LastName (@emp.StaffNo)</option>
+                }
+            </select>
+        </header>
+
+        <div class="export-panel">
+            <strong class="panel-label">Export Reports:</strong>
+
+            <select class="inline-input select-month" @bind="ExportMonth">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    <option value="@i">@(new DateTime(2000, i, 1).ToString("MMMM"))</option>
+                }
+            </select>
+
+            <select class="inline-input select-year" @bind="ExportYear">
+                @for (int i = DateTime.Today.Year - 1; i <= DateTime.Today.Year + 1; i++)
+                {
+                    <option value="@i">@i</option>
+                }
+            </select>
+
+            <select class="inline-input select-employee-md" @bind="ExportEmployeeId">
+                <option value="0">All Employees</option>
+                @foreach (var emp in AllEmployees)
+                {
+                    <option value="@emp.EmployeeId">@emp.FirstName @emp.LastName (@emp.StaffNo)</option>
+                }
+            </select>
+
+            <button class="btn-primary btn-export" @onclick="HandleExport" disabled="@IsExporting">
+                @if (IsExporting)
+                {
+                    <span>Generating...</span>
+                }
+                else
+                {
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download .xlsx</span>
+                }
+            </button>
+        </div>
+
+        @if (SelectedEmployee == null)
+        {
+            <div class="empty-state-message text-center p-xl">
+                <p>Please select an employee from the dropdown above to review their timesheet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="flex-between align-center mb-lg">
+                <h3 class="viewing-title m-0">Reviewing: @SelectedEmployee.FirstName @SelectedEmployee.LastName</h3>
+                
+                <div class="date-selector manager-date-selector">
+                    <button class="btn-icon" title="Previous Week" @onclick="PreviousWeek">
+                        <ArrowLeftIcon CssClass="icon" />
+                    </button>
+                    
+                    <div class="date-picker-wrapper" onclick="document.getElementById('managerDatePicker').showPicker()">
+                        <input type="date" id="managerDatePicker" class="hidden-date-input"
+                               value="@SelectedDate.ToString("yyyy-MM-dd")"
+                               max="@Today.ToString("yyyy-MM-dd")"
+                               @onchange="OnDatePicked" />
+                        <h2 class="manager-date-text">@CurrentWeekStart.ToString("dd MMM yyyy") - @CurrentWeekStart.AddDays(6).ToString("dd MMM yyyy")</h2>
+                    </div>
+
+                    <button class="btn-icon @(!CanGoNextWeek ? "nav-disabled" : "")" title="Next Week" @onclick="NextWeek" disabled="@(!CanGoNextWeek)">
+                        <ArrowRightIcon CssClass="icon" />
+                    </button>
+                </div>
+            </div>
+            
+            <TimesheetCardList GroupedLogs="GroupedMyLogs"
+                               AvailableProjects="AvailableProjects"
+                               CollapsedDays="CollapsedDays"
+                               OnAddNewTask="AddNewTask"
+                               OnToggleDay="ToggleDay"
+                               OnLogModified="MarkAsDirty"
+                               IsManagerView="true"
+                               OnApproveLog="HandleApproveLog" />
+        }
+    }
+    else
+    {
+        <header class="header-actions employee-header">
+            <div class="date-selector">
+                <button class="btn-icon" title="Previous Week" @onclick="PreviousWeek">
+                    <ArrowLeftIcon CssClass="icon" />
+                </button>
+                
+                <button class="btn-icon @(!CanGoNextWeek ? "nav-disabled" : "")" title="Next Week" @onclick="NextWeek" disabled="@(!CanGoNextWeek)">
+                    <ArrowRightIcon CssClass="icon" />
+                </button>
+                
+                <div class="date-picker-wrapper" onclick="document.getElementById('hiddenDatePicker').showPicker()">
+                    <input type="date" id="hiddenDatePicker" class="hidden-date-input"
+                           value="@SelectedDate.ToString("yyyy-MM-dd")"
+                           max="@Today.ToString("yyyy-MM-dd")"
+                           @onchange="OnDatePicked" />
+                           
+                    <h2>@CurrentWeekStart.ToString("dd MMM yyyy") - @CurrentWeekStart.AddDays(6).ToString("dd MMM yyyy")</h2>
+                </div>
+            </div>
+
+            <div class="header-action-group">
+                <button class="btn-primary action-btn @(!DirtyLogs.Any() ? "btn-disabled" : "")"
+                        @onclick="SaveAllChanges"
+                        disabled="@(!DirtyLogs.Any())">
+                    Save Changes @(DirtyLogs.Any() ? $"({DirtyLogs.Count})" : "")
+                </button>
+
+                <button class="btn-icon btn-icon-bordered" @onclick="AddNewTaskForSelected" title="Add Entry for @SelectedDate.ToString("MMM dd")">
+                    <AddIcon CssClass="icon" />
+                </button>
+            </div>
+        </header>
+
+        <div class="weekly-summary">
+            @for (int i = 0; i < 7; i++)
+            {
+                var day = CurrentWeekStart.AddDays(i);
+                var dailyTotal = CurrentWeekLogs.Where(l => l.LogDate == day).Sum(l => l.Hours);
+                
+                var isActive = day == SelectedDate ? "active" : "";
+                var isFuture = day > Today;
+                var futureClass = isFuture ? "future-day" : "";
+
+                <div class="day-card @isActive @futureClass" @onclick="() => SelectDay(day)">
+                    <span class="day-name">@day.ToString("ddd")</span>
+                    <span class="day-hours">@dailyTotal.ToString("0.0")h</span>
+                </div>
+            }
+            
+            <div class="day-card total-card">
+                <span class="day-name">Total</span>
+                <span class="day-hours">@CurrentWeekLogs.Sum(l => l.Hours).ToString("0.0")h</span>
+            </div>
+        </div>
+
+        @if (SelectedEmployee != null)
+        {
+            <TimesheetCardList GroupedLogs="GroupedMyLogs"
+                               AvailableProjects="AvailableProjects"
+                               CollapsedDays="CollapsedDays"
+                               OnAddNewTask="AddNewTask"
+                               OnToggleDay="ToggleDay"
+                               OnLogModified="MarkAsDirty" />
+        }
+    }
+</section>

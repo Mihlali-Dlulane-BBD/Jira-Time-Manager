@@ -1,0 +1,47 @@
+﻿.header-container {
+    display: flex;
+    width: 100%;
+    align-items: end;
+    justify-content: space-between;
+}
+
+
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+/* --- Circular Buttons --- */
+.btn-circle {
+    width: 36px;
+    height: 36px;
+    background-color: transparent;
+    color: var(--text-muted); 
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 0;
+}
+
+    .btn-circle:hover {
+        color: var(--accent-primary); 
+        transform: scale(1.15); 
+    }
+
+ 
+    .btn-circle .icon {
+        width: 24px; 
+        height: 24px;
+    }
+
+

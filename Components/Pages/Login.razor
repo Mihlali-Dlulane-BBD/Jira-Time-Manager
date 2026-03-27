@@ -1,0 +1,40 @@
+﻿@page "/login"
+@layout Layout.EmptyLayout
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager NavManager
+
+<div class="login-wrapper">
+    <div class="login-card">
+        
+        <h2 class="login-title">Welcome Back</h2>
+        <p class="login-subtitle">Enter your Staff Number to access your timesheet.</p>
+
+        <form @onsubmit="HandleLogin">
+            <div style="margin-bottom: 24px;">
+                <label for="staffNo" class="input-label">Staff Number</label>
+                <input id="staffNo" type="text" class="login-input"
+                       @bind="LoginStaffNo" @bind:event="oninput"
+                       placeholder="e.g. 1111" required autocomplete="off" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="error-banner">
+                    @ErrorMessage
+                </div>
+            }
+
+            <button type="submit" class="btn-primary" disabled="@IsLoading">
+                @if (IsLoading)
+                {
+                    <span>Logging in...</span>
+                }
+                else
+                {
+                    <span>Log In</span>
+                }
+            </button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,49 @@
+﻿@using Jira_Time_Manager.Components.Shared.Icons
+@using Microsoft.AspNetCore.Components.Authorization
+
+<div class="sidebar">
+    <div class="brand-header">
+        <div class="brand" title="Jira Time Manager">
+            <div class="brand-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="21" y1="4" x2="14" y2="20"></line>
+                    <line x1="17" y1="4" x2="10" y2="20"></line>
+                    <line x1="13" y1="4" x2="6" y2="20"></line>
+                </svg>
+            </div>
+            <span class="brand-name">Jira Time Manager</span>
+        </div>
+    </div>
+
+    <nav class="primary-nav">
+        <ul>
+            <li>
+                <NavLink class="nav-button" href="/" Match="NavLinkMatch.All" title="Home">
+                    <HomeIcon CssClass="icon" />
+                    <span class="nav-text">Home</span>
+                </NavLink>
+            </li>
+            <li>
+                <NavLink class="nav-button" href="/timesheet" title="Time Sheet">
+                    <ChecklistIcon CssClass="icon" />
+                    <span class="nav-text">Time Sheet</span>
+                </NavLink>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="bottom-nav">
+        <ul>
+            <AuthorizeView>
+                <Authorized>
+                    <li>
+                        <button class="nav-button" @onclick="HandleLogout" title="Logout" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer; padding: 0; font: inherit;">
+                            <Logout CssClass="icon"/>
+                            <span class="nav-text">Logout</span>
+                        </button>
+                    </li>
+                </Authorized>
+            </AuthorizeView>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+﻿@using Jira_Time_Manager.Components.Shared.Icons
+@inject Jira_Time_Manager.Core.Services.ThemeService Theme
+
+<div class="header-container">
+    
+    <div class="header-tools">
+        <button class="btn-circle" @onclick="Theme.ToggleThemeAsync" title="Toggle Theme">
+            @if (Theme.IsDarkMode)
+            {
+                <SunIcon CssClass="icon" />
+            }
+            else
+            {
+                <MoonIcon CssClass="icon" />
+            }
+        </button>
+    </div>
+</div>

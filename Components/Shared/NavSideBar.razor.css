@@ -1,0 +1,21 @@
+﻿.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.primary-nav {
+    flex-grow: 1;
+}
+
+.bottom-nav {
+    padding-bottom: 24px;
+    border-top: 1px solid var(--border-subtle); 
+    padding-top: 12px;
+}
+
+    .bottom-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }

@@ -1,0 +1,245 @@
+/* =========================================
+   BLAZOR DEFAULT BOILERPLATE
+   ========================================= */
+h1:focus {
+    outline: none;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid #e50000;
+}
+
+.validation-message {
+    color: #e50000;
+}
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
+
+.darker-border-checkbox.form-check-input {
+    border-color: #929292;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* =========================================
+   GLOBAL THEME VARIABLES
+   ========================================= */
+:root {
+    /* Backgrounds - Synced to Hue 240 (Midnight/Zinc) */
+    --bg-primary: #09090b; /* Near absolute black */
+    --bg-surface: #18181b; /* Distinct pop for cards */
+    /* Borders */
+    --border-subtle: #27272a; /* Very subtle framing */
+    /* Text */
+    --text-primary: #fafafa; /* High contrast white */
+    --text-muted: #a1a1aa; /* Warm-leaning gray */
+    /* Semantic Accents */
+    --accent-primary: #6366f1; /* Indigo (Very modern, slightly purple-leaning blue) */
+    --accent-hover: #4f46e5; /* Deep Indigo */
+
+    --accent-success: #22c55e; /* Bright Green */
+    --accent-warning: #eab308; /* Yellow */
+    --accent-danger: #f43f5e; /* Rose Red */
+    /* Interactive */
+    --bg-hover: rgba(255, 255, 255, 0.08);
+}
+
+/* --- Light Mode Palette --- */
+.theme-light {
+    --bg-primary: #f8fafc; /* Soft slate background */
+    --bg-surface: #ffffff; /* Pure white for cards/sidebars to pop */
+
+    --border-subtle: #e2e8f0; /* Crisp, clean dividers */
+
+    --text-primary: #0f172a; /* Near-black for maximum readability */
+    --text-muted: #64748b; /* Slate gray for secondary text */
+    /* Accents remain the same, but we adjust the hover state for white backgrounds */
+    --bg-hover: rgba(0, 0, 0, 0.04);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.app-layout {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--bg-primary); 
+    color: var(--text-primary); 
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
+
+/* =========================================
+   NAV SIDE BAR
+   ========================================= */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 80px;
+    padding: 24px 12px;
+    background-color: var(--bg-surface);
+    color: var(--text-muted);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    white-space: nowrap;
+
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+    .sidebar:hover {
+        width: 260px;
+        padding: 24px 16px;
+    }
+
+
+.brand-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0 4px 24px 4px; /* Added bottom padding to make room for the border */
+    border-bottom: 1px solid var(--border-subtle); /* Structural separator line */
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);
+}
+
+.brand-icon {
+    flex-shrink: 0;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent-primary); 
+    transform: scale(1.1); 
+}
+
+.brand-name {
+    font-size: 1.05rem;
+    font-weight: 700; 
+    letter-spacing: 0.5px; 
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.sidebar:hover .brand-name {
+    opacity: 1;
+    transition-delay: 0.1s;
+}
+
+.primary-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    text-decoration: none !important;
+    color: var(--text-muted);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.nav-text {
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.sidebar:hover .nav-text {
+    opacity: 1;
+    transition-delay: 0.1s;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    width: 24px;
+    flex-shrink: 0;
+}
+
+/* Hover state for inactive buttons */
+.nav-button:hover:not(.active) {
+    background-color: var(--bg-hover); 
+    color: var(--text-primary); 
+}
+
+/* Active Button State */
+.nav-button.active {
+    background-color: var(--accent-primary); 
+    color: #ffffff; 
+}
+
+
+/*
+    Icon button
+*/
+
+.btn-icon {
+    background-color: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+    border-radius: 4px; 
+}
+
+    /* The Snappy Hover Effect */
+    .btn-icon:hover {
+        color: var(--accent-primary);
+        transform: scale(1.15); 
+    }
+
+    /* Ensure the SVG scales nicely inside */
+    .btn-icon .icon {
+        width: 20px;
+        height: 20px;
+    }

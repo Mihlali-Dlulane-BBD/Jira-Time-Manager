@@ -1,0 +1,101 @@
+﻿.login-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    /* This ensures it takes up the full screen height if EmptyLayout misses it */
+    min-height: 100vh;
+}
+
+.login-card {
+    /* Uses your variable, but falls back to your Zinc surface color if it can't find it */
+    background-color: var(--bg-surface, #18181b);
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle, #27272a);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 420px;
+}
+
+.login-title {
+    color: var(--text-primary, #fafafa);
+    margin: 0 0 8px 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.login-subtitle {
+    color: var(--text-muted, #a1a1aa);
+    text-align: center;
+    margin: 0 0 30px 0;
+    font-size: 0.95rem;
+}
+
+.input-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-primary, #fafafa);
+    font-size: 0.9rem;
+}
+
+.login-input {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid var(--border-subtle, #27272a);
+    color: var(--text-primary, #fafafa);
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    outline: none;
+    box-sizing: border-box;
+}
+
+    .login-input:hover {
+        background-color: rgba(255, 255, 255, 0.03);
+        border-color: var(--border-subtle, #27272a);
+    }
+
+    .login-input:focus {
+        background-color: var(--bg-surface, #18181b);
+        border-color: var(--accent-primary, #6366f1);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .login-input::placeholder {
+        color: var(--text-muted, #a1a1aa);
+        opacity: 0.6;
+    }
+
+.btn-primary {
+    background-color: var(--accent-primary, #6366f1);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: var(--accent-hover, #4f46e5);
+    }
+
+.error-banner {
+    color: var(--accent-danger, #f43f5e);
+    background-color: rgba(244, 63, 94, 0.1);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    text-align: center;
+}

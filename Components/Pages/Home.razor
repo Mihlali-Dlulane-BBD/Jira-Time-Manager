@@ -1,0 +1,162 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@using Jira_Time_Manager.Components.Shared.Icons
+@inject NavigationManager NavManager
+
+<section class="dashboard-container">
+    
+    <fieldset class="role-toggle-bar">
+        <legend class="sr-only">View Mode</legend>
+        <strong>Test Mode: </strong>
+        <button class="btn-ghost-small" @onclick="SwitchToEmployeeView">Employee View</button>
+        <button class="btn-ghost-small" @onclick="SwitchToManagerView">Manager View</button>
+    </fieldset>
+
+    <header class="welcome-section">
+        <hgroup class="welcome-text">
+            <h1 class="page-title">Welcome back, @(LoggedInEmployee?.FirstName ?? "User")</h1>
+            <p class="page-subtitle">
+                @(IsManagerView ? "Here is your team's approval overview." : "Here is your time logging overview for this week.")
+            </p>
+        </hgroup>
+        
+        @if (IsManagerView)
+        {
+            <button class="btn-primary action-btn" @onclick='() => NavManager.NavigateTo("/timesheet")'>
+                <span>Review Approvals</span>
+            </button>
+        }
+        else
+        {
+            <button class="btn-primary action-btn" @onclick='() => NavManager.NavigateTo("/timesheet")'>
+                <ClockIcon CssClass="icon-small" />
+                <span>Log Time</span>
+            </button>
+        }
+    </header>
+
+    @if (IsManagerView)
+    {
+        <section class="stats-grid" aria-label="Manager Quick Stats">
+            <article class="stat-card border-warning">
+                <header class="stat-header">
+                    <span class="stat-label">Total Pending Hours</span>
+                    <span class="stat-icon icon-warning" aria-hidden="true">⏳</span>
+                </header>
+                <h2 class="stat-value">@TeamPendingHours.ToString("0.0") <span class="stat-unit">hrs</span></h2>
+                <p class="stat-subtext">Across @TeamPendingLogs.Select(l => l.EmployeeId).Distinct().Count() team members</p>
+            </article>
+
+            <article class="stat-card border-primary">
+                <header class="stat-header">
+                    <span class="stat-label">Tasks Awaiting Review</span>
+                    <span class="stat-icon icon-primary" aria-hidden="true">📋</span>
+                </header>
+                <h2 class="stat-value">@TeamPendingLogs.Count() <span class="stat-unit">tasks</span></h2>
+                <p class="stat-subtext">Needs your approval</p>
+            </article>
+        </section>
+
+        <section class="charts-grid charts-grid-single" aria-label="Team Approvals List">
+            <article class="chart-card">
+                <h3 class="card-title">Team Members Needing Approval</h3>
+                <ul class="ticket-list">
+                    @foreach (var empGroup in TeamPendingLogs.GroupBy(l => l.Employee))
+                    {
+                        <li class="active-ticket ticket-flex-row">
+                            <div>
+                                <div class="ticket-name fw-600">@empGroup.Key?.FirstName @empGroup.Key?.LastName</div>
+                                <div class="ticket-id">@empGroup.Count() tasks submitted</div>
+                            </div>
+                            <h3 class="ticket-hours-warning">@empGroup.Sum(l => l.Hours).ToString("0.0")h</h3>
+                        </li>
+                    }
+                    @if (!TeamPendingLogs.Any())
+                    {
+                        <li class="empty-state-message">No pending approvals! Great job.</li>
+                    }
+                </ul>
+            </article>
+        </section>
+    }
+    else
+    {
+        <section class="stats-grid" aria-label="Employee Quick Stats">
+            <article class="stat-card">
+                <header class="stat-header">
+                    <span class="stat-label">Total Logged (This Week)</span>
+                    <span class="stat-icon icon-primary" aria-hidden="true">⏱️</span>
+                </header>
+                <h2 class="stat-value">@WeeklyTotal.ToString("0.0") <span class="stat-unit">hrs</span></h2>
+                <div class="progress-container" role="progressbar" aria-valuenow="@WeeklyTotal" aria-valuemin="0" aria-valuemax="40">
+                    <div class="progress-bar-bg" aria-hidden="true">
+                        <div class="progress-bar-fill fill-primary" style="width: @(Math.Min((WeeklyTotal / 40M) * 100M, 100).ToString("0.0"))%;"></div>
+                    </div>
+                    <span class="progress-text">@WeeklyTotal.ToString("0.0") / 40h</span>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <header class="stat-header">
+                    <span class="stat-label">Pending Lead Approval</span>
+                    <span class="stat-icon icon-warning" aria-hidden="true">⏳</span>
+                </header>
+                <h2 class="stat-value">@WeeklyPending.ToString("0.0") <span class="stat-unit">hrs</span></h2>
+                <p class="stat-subtext text-warning">Awaiting review</p>
+            </article>
+
+            <article class="stat-card">
+                <header class="stat-header">
+                    <span class="stat-label">Approved Hours</span>
+                    <span class="stat-icon icon-success" aria-hidden="true">✅</span>
+                </header>
+                <h2 class="stat-value">@WeeklyApproved.ToString("0.0") <span class="stat-unit">hrs</span></h2>
+                <p class="stat-subtext text-success">Ready for payroll</p>
+            </article>
+        </section>
+
+        <section class="charts-grid" aria-label="Detailed Metrics">
+            <article class="chart-card">
+                <h3 class="card-title">Time by Project (This Week)</h3>
+                
+                <ul class="project-breakdown">
+                    @foreach (var proj in ProjectBreakdown)
+                    {
+                        var widthPct = WeeklyTotal > 0 ? (proj.Value / WeeklyTotal) * 100M : 0;
+                        
+                        <li class="project-bar">
+                            <div class="project-info">
+                                <span class="project-name">@proj.Key</span>
+                                <span class="project-hours">@proj.Value.ToString("0.0")h</span>
+                            </div>
+                            <div class="bar-bg" aria-hidden="true">
+                                <div class="bar-fill fill-primary" style="width: @widthPct.ToString("0.0")%;"></div>
+                            </div>
+                        </li>
+                    }
+                    @if (!ProjectBreakdown.Any())
+                    {
+                        <li class="empty-state-message">No time logged to projects yet this week.</li>
+                    }
+                </ul>
+            </article>
+
+            <article class="chart-card">
+                <h3 class="card-title">Recent Activity</h3>
+                <ul class="ticket-list">
+                    @foreach (var log in RecentLogs.Take(4))
+                    {
+                        <li class="active-ticket">
+                            <div class="ticket-id flex-between">
+                                <span>@log.Project?.ProjectName</span>
+                                <time class="ticket-date" datetime="@log.LogDate.ToString("yyyy-MM-dd")">@log.LogDate.ToString("MMM dd")</time>
+                            </div>
+                            <div class="ticket-name">@log.WorkCode: @log.Hours.ToString("0.0")h</div>
+                        </li>
+                    }
+                </ul>
+            </article>
+        </section>
+    }
+</section>

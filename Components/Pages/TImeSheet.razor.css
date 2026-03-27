@@ -1,0 +1,463 @@
+﻿/* =========================================
+   CONTAINER & LAYOUT
+   ========================================= */
+.timesheet-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.role-toggle-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    padding: 10px;
+    background: var(--bg-surface);
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+}
+
+/* =========================================
+   HEADER & DATE PICKER
+   ========================================= */
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.date-selector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: nowrap;
+}
+
+    .date-selector h2 {
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin: 0;
+        color: var(--text-primary);
+        white-space: nowrap;
+    }
+
+    .date-selector select {
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        border-radius: 6px;
+        outline: none;
+        padding: 6px 12px;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+        cursor: pointer;
+    }
+
+        .date-selector select:hover {
+            background-color: var(--bg-hover);
+        }
+
+.manager-date-selector {
+    margin: 0;
+    background: var(--bg-surface);
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+}
+
+.manager-date-text {
+    font-size: 1rem !important;
+}
+
+/* =========================================
+   MANAGER PANELS & EXPORT (NEW)
+   ========================================= */
+.manager-panel {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--bg-surface);
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.export-panel {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.panel-label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Input Width Constraints */
+.select-employee-lg {
+    max-width: 300px;
+}
+
+.select-employee-md {
+    width: 200px;
+}
+
+.select-month {
+    width: 140px;
+}
+
+.select-year {
+    width: 100px;
+}
+
+.btn-export {
+    padding: 8px 16px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* =========================================
+   DAILY CARDS & HEADERS (MANAGER VIEW)
+   ========================================= */
+.daily-card {
+    background-color: var(--bg-surface);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.daily-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.day-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.day-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.task-count {
+    color: var(--text-muted);
+}
+
+/* =========================================
+   TICKET ROWS & COLUMNS
+   ========================================= */
+.daily-rows {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    padding: 16px 24px;
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background-color 0.2s ease;
+}
+
+    .ticket-row:last-child {
+        border-bottom: none;
+    }
+
+    .ticket-row:hover {
+        background-color: var(--bg-hover);
+    }
+
+/* --- Column Sizing --- */
+.col-project {
+    flex: 0 0 160px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.col-workcode {
+    flex: 0 0 120px;
+    color: var(--accent-primary);
+}
+
+.col-time-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 100px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.icon-clock-small {
+    color: var(--text-muted);
+    width: 14px;
+    height: 14px;
+}
+
+/* --- Manager View Specifics --- */
+.approval-row {
+    align-items: center;
+}
+
+.employee-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    color: var(--text-primary);
+}
+
+.date-badge {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+.btn-primary {
+    background-color: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+    .btn-primary:hover {
+        background-color: var(--accent-hover);
+    }
+
+.btn-icon {
+    background-color: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+    .btn-icon:hover {
+        color: var(--accent-primary);
+        transform: scale(1.1);
+    }
+
+    .btn-icon .icon {
+        width: 20px;
+        height: 20px;
+    }
+
+.btn-ghost-small {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .btn-ghost-small:hover {
+        background: var(--bg-hover);
+    }
+
+/* =========================================
+   WEEKLY SUMMARY CARDS
+   ========================================= */
+.weekly-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.day-card {
+    background-color: var(--bg-surface);
+    border-radius: 10px;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-width: 90px;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+    .day-card.active {
+        background-color: var(--bg-hover);
+        border-color: var(--accent-primary);
+    }
+
+    .day-card .day-name {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .day-card .day-hours {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .day-card.total-card {
+        background-color: var(--accent-primary);
+        border: none;
+    }
+
+.total-card .day-name, .total-card .day-hours {
+    color: white;
+}
+
+.day-card:hover:not(.active):not(.future-day):not(.total-card) {
+    border-color: var(--border-subtle);
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.day-card.future-day {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: transparent;
+}
+
+.date-picker-wrapper {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+    .date-picker-wrapper h2 {
+        transition: color 0.2s ease;
+        margin: 0;
+    }
+
+    .date-picker-wrapper:hover h2 {
+        color: var(--accent-primary);
+    }
+
+.hidden-date-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+/* =========================================
+   UTILITY & STATE CLASSES
+   ========================================= */
+.sr-only {
+    display: none;
+}
+
+.m-0 {
+    margin: 0;
+}
+
+.mb-lg {
+    margin-bottom: 20px;
+}
+
+.p-xl {
+    padding: 40px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.empty-state-message {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.viewing-title {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.employee-header {
+    margin-bottom: 20px;
+}
+
+.header-action-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.nav-disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.btn-icon-bordered {
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+}
+
+.btn-primary.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--border-subtle);
+    color: var(--text-muted);
+}

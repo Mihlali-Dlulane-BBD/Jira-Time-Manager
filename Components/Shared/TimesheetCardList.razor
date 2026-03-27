@@ -1,0 +1,63 @@
+﻿@using Jira_Time_Manager.Components.Shared.Icons
+
+<section class="worklog-lists">
+    @if (GroupedLogs != null && GroupedLogs.Any())
+    {
+        @foreach (var group in GroupedLogs)
+        {
+            <article class="daily-card">
+                <header class="daily-header">
+                    <h3 class="day-title">@group.Key.ToString("dddd, dd MMM yyyy")</h3>
+                    <div class="day-stats">
+                        <span class="task-count">@group.Count() Tasks</span>
+                        <ClockIcon CssClass="icon-clock" />
+                        <span class="total-time">@group.Sum(g => g.Hours).ToString("0.00")h</span>
+                        <button class="btn-icon" @onclick="() => OnAddNewTask.InvokeAsync(group.Key)" title="Add Task">
+                            <AddIcon CssClass="icon" /> 
+                        </button>
+                        <button class="btn-icon" @onclick="() => OnToggleDay.InvokeAsync(group.Key)" title="Toggle View">
+                            <ArrowUpIcon CssClass="icon" style="@(CollapsedDays.Contains(group.Key) ? "transform: rotate(180deg);" : "")" />
+                        </button>
+                    </div>
+                </header>
+                
+                @if (!CollapsedDays.Contains(group.Key))
+                {
+                    <div class="daily-rows" role="list">
+                        @foreach (var log in group)
+                        {
+                            <div class="ticket-row" role="listitem">
+                                <select class="inline-input col-project" @bind="log.ProjectId" @bind:after="() => OnLogModified.InvokeAsync(log)" disabled="@IsManagerView">
+                                    <option value="0">Select Project...</option>
+                                    @foreach (var proj in AvailableProjects)
+                                    {
+                                        <option value="@proj.ProjectId">@proj.ProjectName</option>
+                                    }
+                                </select>
+                                <input class="inline-input col-workcode" @bind="log.WorkCode" @bind:after="() => OnLogModified.InvokeAsync(log)" placeholder="Code" disabled="@IsManagerView" />
+                                <textarea class="inline-input col-comments" @bind="log.Comment" @bind:after="() => OnLogModified.InvokeAsync(log)" placeholder="Comments..." rows="1" disabled="@IsManagerView"></textarea>
+                                <div class="col-time-wrapper">
+                                    <input class="inline-input col-time" type="number" step="0.25" min="0" @bind="log.Hours" @bind:after="() => OnLogModified.InvokeAsync(log)" disabled="@IsManagerView" />
+                                </div>
+                                
+                                @if (IsManagerView)
+                                {
+                                    <div class="col-approval" style="min-width: 100px; display: flex; justify-content: flex-end;">
+                                        @if (log.IsApproved)
+                                        {
+                                            <span style="color: var(--accent-success); font-weight: 600; font-size: 0.9rem;">✅ Approved</span>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn-primary" style="padding: 4px 12px; font-size: 0.85rem;" @onclick="() => OnApproveLog.InvokeAsync(log)">Approve</button>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </article>
+        }
+    }
+</section>

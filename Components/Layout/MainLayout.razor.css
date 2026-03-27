@@ -1,0 +1,41 @@
+.app-layout {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100%; 
+    overflow: hidden;
+}
+
+.sidebar-wrapper {
+    width: auto;
+    flex-shrink: 0;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* The Top Bar (Search, Profile) */
+.top-header {
+    height: 70px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    background-color: var(--bg-primary);
+}
+
+
+.content-body {
+    flex-grow: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+    background-color: var(--bg-primary);
+}

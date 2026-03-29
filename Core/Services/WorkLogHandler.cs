@@ -106,5 +106,39 @@ namespace Jira_Time_Manager.Core.Services
             using var context = await _dbFactory.CreateDbContextAsync();
             return await context.Employees.OrderBy(e => e.FirstName).ToListAsync();
         }
+
+        public async Task<List<ImportBatch>> GetImportHistoryAsync()
+        {
+            using var context = await _dbFactory.CreateDbContextAsync();
+            // Show newest imports first
+            return await context.ImportBatches
+                .OrderByDescending(b => b.ImportDate)
+                .ToListAsync();
+        }
+
+        public async Task<bool> RevertImportBatchAsync(int batchId)
+        {
+            using var context = await _dbFactory.CreateDbContextAsync();
+
+            var batch = await context.ImportBatches
+                .Include(b => b.WorkLogs)
+                .FirstOrDefaultAsync(b => b.ImportBatchId == batchId);
+
+            if (batch == null || batch.Status == "Reverted") return false;
+
+            if (batch.WorkLogs.Any(w => w.IsApproved))
+            {
+               
+                throw new InvalidOperationException("Cannot revert this file. One or more timesheets from this batch have already been approved.");
+            }
+
+            context.WorkLogs.RemoveRange(batch.WorkLogs);
+
+     
+            batch.Status = "Reverted";
+
+            await context.SaveChangesAsync();
+            return true;
+        }
     }
 }

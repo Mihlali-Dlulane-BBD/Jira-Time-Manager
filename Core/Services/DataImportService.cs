@@ -1,6 +1,6 @@
-﻿using Jira_Time_Manager.Core.Interface;
+﻿using Jira_Time_Manager.Core.Data;
+using Jira_Time_Manager.Core.Interface;
 using Jira_Time_Manager.Core.Models;
-using Jira_Time_Manager.Core.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jira_Time_Manager.Core.Services
@@ -8,15 +8,26 @@ namespace Jira_Time_Manager.Core.Services
     public class DataImportService : IDataImportService
     {
         private readonly IDbContextFactory<JiraTimeManagerDbContext> _dbFactory;
+        private readonly bool _allowDuplicateLogs = false;
 
         public DataImportService(IDbContextFactory<JiraTimeManagerDbContext> dbFactory)
         {
+
             _dbFactory = dbFactory;
         }
 
-        public async Task ImportWorkLogsAsync(IEnumerable<WorkLogImportDto> rawLogs)
+        public async Task ImportWorkLogsAsync(IEnumerable<WorkLogImportDto> rawLogs, string fileName)
         {
             using var context = await _dbFactory.CreateDbContextAsync();
+
+            var importBatch = new ImportBatch
+            {
+                FileName = fileName,
+                ImportDate = DateTime.Now,
+                Status = "Active"
+            };
+
+            context.ImportBatches.Add(importBatch);
 
             var defaultTeam = await GetOrCreateDefaultTeamAsync(context);
 
@@ -27,10 +38,21 @@ namespace Jira_Time_Manager.Core.Services
                 var employee = await GetOrCreateEmployeeAsync(context, rawLog, defaultTeam.TeamId);
 
                 var newLog = MapToWorkLogEntity(rawLog, employee.EmployeeId, project.ProjectId);
+                newLog.ImportBatch = importBatch;
+
+                if (!_allowDuplicateLogs)
+                {
+                    bool isDuplicate = await IsDuplicateLogAsync(context, newLog);
+                    if (isDuplicate)
+                    {
+                        continue;
+                    }
+                }
+
                 context.WorkLogs.Add(newLog);
             }
 
-         
+
             await context.SaveChangesAsync();
         }
 
@@ -41,7 +63,7 @@ namespace Jira_Time_Manager.Core.Services
             {
                 team = new Team { TeamName = "Unassigned" };
                 context.Teams.Add(team);
-                await context.SaveChangesAsync(); 
+                await context.SaveChangesAsync();
             }
             return team;
         }
@@ -87,6 +109,16 @@ namespace Jira_Time_Manager.Core.Services
                 await context.SaveChangesAsync();
             }
             return employee;
+        }
+
+        private async Task<bool> IsDuplicateLogAsync(JiraTimeManagerDbContext context, WorkLog newLog)
+        {
+            return await context.WorkLogs.AnyAsync(w =>
+                w.EmployeeId == newLog.EmployeeId &&
+                w.ProjectId == newLog.ProjectId &&
+                w.LogDate == newLog.LogDate &&
+                w.Hours == newLog.Hours &&
+                w.WorkCode == newLog.WorkCode);
         }
 
         private WorkLog MapToWorkLogEntity(WorkLogImportDto rawLog, int employeeId, int projectId)

@@ -22,7 +22,11 @@ public partial class WorkLog
 
     public bool IsApproved { get; set; }
 
+    public int? ImportBatchId { get; set; }
+
     public virtual Employee Employee { get; set; } = null!;
+
+    public virtual ImportBatch? ImportBatch { get; set; }
 
     public virtual Project Project { get; set; } = null!;
 }

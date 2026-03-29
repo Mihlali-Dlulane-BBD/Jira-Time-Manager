@@ -18,6 +18,8 @@ public partial class JiraTimeManagerDbContext : DbContext
 
     public virtual DbSet<Employee> Employees { get; set; }
 
+    public virtual DbSet<ImportBatch> ImportBatches { get; set; }
+
     public virtual DbSet<Manager> Managers { get; set; }
 
     public virtual DbSet<Project> Projects { get; set; }
@@ -31,11 +33,11 @@ public partial class JiraTimeManagerDbContext : DbContext
     {
         modelBuilder.Entity<Client>(entity =>
         {
-            entity.HasKey(e => e.ClientId).HasName("PK__clients__BF21A424BD0E2369");
+            entity.HasKey(e => e.ClientId).HasName("PK__clients__BF21A42455A623A2");
 
             entity.ToTable("clients");
 
-            entity.HasIndex(e => e.ClientName, "UQ__clients__9ADC3B74CF593258").IsUnique();
+            entity.HasIndex(e => e.ClientName, "UQ__clients__9ADC3B74D0238E42").IsUnique();
 
             entity.Property(e => e.ClientId).HasColumnName("client_id");
             entity.Property(e => e.ClientName)
@@ -46,14 +48,13 @@ public partial class JiraTimeManagerDbContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PK__employee__C52E0BA84CC76967");
+            entity.HasKey(e => e.EmployeeId).HasName("PK__employee__C52E0BA8709C2501");
 
             entity.ToTable("employees");
 
-            entity.HasIndex(e => e.StaffNo, "UQ__employee__1962B212E1DA41FD").IsUnique();
+            entity.HasIndex(e => e.StaffNo, "UQ__employee__1962B21233B754F3").IsUnique();
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -76,16 +77,27 @@ public partial class JiraTimeManagerDbContext : DbContext
             entity.HasOne(d => d.Team).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.TeamId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__employees__team___2E1BDC42");
+                .HasConstraintName("FK__employees__team___2D27B809");
+        });
+
+        modelBuilder.Entity<ImportBatch>(entity =>
+        {
+            entity.HasKey(e => e.ImportBatchId).HasName("PK__import_b__36EBA3F7BAC9890A");
+
+            entity.ToTable("import_batches");
+
+            entity.Property(e => e.ImportBatchId).HasColumnName("import_batch_id");
+            entity.Property(e => e.ImportDate).HasColumnName("import_date");
+            entity.Property(e => e.Status).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Manager>(entity =>
         {
-            entity.HasKey(e => e.ManagerId).HasName("PK__managers__5A6073FC27DD79E3");
+            entity.HasKey(e => e.ManagerId).HasName("PK__managers__5A6073FCE1166B7C");
 
             entity.ToTable("managers");
 
-            entity.HasIndex(e => e.EmployeeId, "UQ__managers__C52E0BA92CD9B289").IsUnique();
+            entity.HasIndex(e => e.EmployeeId, "UQ__managers__C52E0BA9D58436F3").IsUnique();
 
             entity.Property(e => e.ManagerId).HasColumnName("manager_id");
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
@@ -93,12 +105,12 @@ public partial class JiraTimeManagerDbContext : DbContext
             entity.HasOne(d => d.Employee).WithOne(p => p.ManagerNavigation)
                 .HasForeignKey<Manager>(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__managers__employ__31EC6D26");
+                .HasConstraintName("FK__managers__employ__30F848ED");
         });
 
         modelBuilder.Entity<Project>(entity =>
         {
-            entity.HasKey(e => e.ProjectId).HasName("PK__projects__BC799E1F4DFC6553");
+            entity.HasKey(e => e.ProjectId).HasName("PK__projects__BC799E1F64DD7A59");
 
             entity.ToTable("projects");
 
@@ -117,11 +129,11 @@ public partial class JiraTimeManagerDbContext : DbContext
 
         modelBuilder.Entity<Team>(entity =>
         {
-            entity.HasKey(e => e.TeamId).HasName("PK__teams__F82DEDBC6E6EF83A");
+            entity.HasKey(e => e.TeamId).HasName("PK__teams__F82DEDBC59234FD4");
 
             entity.ToTable("teams");
 
-            entity.HasIndex(e => e.TeamName, "UQ__teams__29E35E0C050CAE3F").IsUnique();
+            entity.HasIndex(e => e.TeamName, "UQ__teams__29E35E0CA2384A64").IsUnique();
 
             entity.Property(e => e.TeamId).HasColumnName("team_id");
             entity.Property(e => e.TeamName)
@@ -132,7 +144,7 @@ public partial class JiraTimeManagerDbContext : DbContext
 
         modelBuilder.Entity<WorkLog>(entity =>
         {
-            entity.HasKey(e => e.LogId).HasName("PK__work_log__9E2397E072F2F7AC");
+            entity.HasKey(e => e.LogId).HasName("PK__work_log__9E2397E0F3064BE5");
 
             entity.ToTable("work_logs");
 
@@ -148,6 +160,7 @@ public partial class JiraTimeManagerDbContext : DbContext
             entity.Property(e => e.Hours)
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("hours");
+            entity.Property(e => e.ImportBatchId).HasColumnName("import_batch_id");
             entity.Property(e => e.IsApproved)
                 .HasDefaultValue(false)
                 .HasColumnName("is_approved");
@@ -165,12 +178,17 @@ public partial class JiraTimeManagerDbContext : DbContext
             entity.HasOne(d => d.Employee).WithMany(p => p.WorkLogs)
                 .HasForeignKey(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__work_logs__emplo__36B12243");
+                .HasConstraintName("FK__work_logs__emplo__35BCFE0A");
+
+            entity.HasOne(d => d.ImportBatch).WithMany(p => p.WorkLogs)
+                .HasForeignKey(d => d.ImportBatchId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_WorkLogs_ImportBatches_ImportBatchId");
 
             entity.HasOne(d => d.Project).WithMany(p => p.WorkLogs)
                 .HasForeignKey(d => d.ProjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__work_logs__proje__37A5467C");
+                .HasConstraintName("FK__work_logs__proje__36B12243");
         });
 
         OnModelCreatingPartial(modelBuilder);

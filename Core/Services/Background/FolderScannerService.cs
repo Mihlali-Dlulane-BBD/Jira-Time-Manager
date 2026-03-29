@@ -54,7 +54,8 @@ namespace Jira_Time_Manager.Core.Services.Background
                 using var scope = _scopeFactory.CreateScope();
                 var parser = scope.ServiceProvider.GetRequiredService<IWorkLogParser>();
                 var importer = scope.ServiceProvider.GetRequiredService<IDataImportService>();
-
+                   
+                string fileName = Path.GetFileName(filePath);
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
          
@@ -63,12 +64,11 @@ namespace Jira_Time_Manager.Core.Services.Background
                  
                     if (rawLogs.Any())
                     {
-                        await importer.ImportWorkLogsAsync(rawLogs);
+                        await importer.ImportWorkLogsAsync(rawLogs,fileName);
                         _logger.LogInformation($"Successfully imported {rawLogs.Count()} logs from {Path.GetFileName(filePath)}");
                     }
                 }
 
-                string fileName = Path.GetFileName(filePath);
                 string destPath = Path.Combine(processedFolder, $"{DateTime.Now:yyyyMMdd_HHmmss}_{fileName}");
                 File.Move(filePath, destPath);
             }

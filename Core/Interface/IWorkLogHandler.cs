@@ -18,5 +18,7 @@ namespace Jira_Time_Manager.Core.Interface
         Task<IEnumerable<Employee>> SearchEmployeesAsync(string searchTerm);
         Task<IEnumerable<Project>> GetAllProjectsAsync();
         Task<IEnumerable<Employee>> GetAllEmployeesAsync();
+        Task<List<ImportBatch>> GetImportHistoryAsync();
+        Task<bool> RevertImportBatchAsync(int batchId);
     }
 }

@@ -4,6 +4,6 @@ namespace Jira_Time_Manager.Core.Interface
 {
     public interface IDataImportService
     {
-        Task ImportWorkLogsAsync(IEnumerable<WorkLogImportDto> rawLogs);
+        Task ImportWorkLogsAsync(IEnumerable<WorkLogImportDto> rawLogs,string fileName);
     }
 }

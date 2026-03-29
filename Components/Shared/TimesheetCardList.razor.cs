@@ -26,6 +26,15 @@ namespace Jira_Time_Manager.Components.Shared
         public EventCallback<WorkLog> OnLogModified { get; set; }
 
         [Parameter] public bool IsManagerView { get; set; } = false;
-        [Parameter] public EventCallback<WorkLog> OnApproveLog { get; set; }
+        [Parameter] public EventCallback<WorkLog> OnApprovalChanged { get; set; }
+
+        private async Task SetApprovalState(WorkLog log, bool isApproved)
+        {
+            if (log.IsApproved != isApproved)
+            {
+                log.IsApproved = isApproved;
+                await OnApprovalChanged.InvokeAsync(log);
+            }
+        }
     }
 }

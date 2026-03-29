@@ -1,4 +1,5 @@
 ﻿@using Jira_Time_Manager.Components.Shared.Icons
+@using Jira_Time_Manager.Core.Models
 
 <section class="worklog-lists">
     @if (GroupedLogs != null && GroupedLogs.Any())
@@ -13,7 +14,7 @@
                         <ClockIcon CssClass="icon-clock" />
                         <span class="total-time">@group.Sum(g => g.Hours).ToString("0.00")h</span>
                         <button class="btn-icon" @onclick="() => OnAddNewTask.InvokeAsync(group.Key)" title="Add Task">
-                            <AddIcon CssClass="icon" /> 
+                            <AddIcon CssClass="icon" />
                         </button>
                         <button class="btn-icon" @onclick="() => OnToggleDay.InvokeAsync(group.Key)" title="Toggle View">
                             <ArrowUpIcon CssClass="icon" style="@(CollapsedDays.Contains(group.Key) ? "transform: rotate(180deg);" : "")" />
@@ -26,31 +27,86 @@
                     <div class="daily-rows" role="list">
                         @foreach (var log in group)
                         {
-                            <div class="ticket-row" role="listitem">
-                                <select class="inline-input col-project" @bind="log.ProjectId" @bind:after="() => OnLogModified.InvokeAsync(log)" disabled="@IsManagerView">
-                                    <option value="0">Select Project...</option>
-                                    @foreach (var proj in AvailableProjects)
-                                    {
-                                        <option value="@proj.ProjectId">@proj.ProjectName</option>
-                                    }
-                                </select>
-                                <input class="inline-input col-workcode" @bind="log.WorkCode" @bind:after="() => OnLogModified.InvokeAsync(log)" placeholder="Code" disabled="@IsManagerView" />
-                                <textarea class="inline-input col-comments" @bind="log.Comment" @bind:after="() => OnLogModified.InvokeAsync(log)" placeholder="Comments..." rows="1" disabled="@IsManagerView"></textarea>
-                                <div class="col-time-wrapper">
-                                    <input class="inline-input col-time" type="number" step="0.25" min="0" @bind="log.Hours" @bind:after="() => OnLogModified.InvokeAsync(log)" disabled="@IsManagerView" />
-                                </div>
-                                
-                                @if (IsManagerView)
+                            <div class="ticket-row @(log.IsApproved ? "locked-row" : "")">
+    
+                                @if (!IsManagerView)
                                 {
-                                    <div class="col-approval" style="min-width: 100px; display: flex; justify-content: flex-end;">
+                                    <div class="col-status">
                                         @if (log.IsApproved)
                                         {
-                                            <span style="color: var(--accent-success); font-weight: 600; font-size: 0.9rem;">✅ Approved</span>
+                                            <span class="status-badge status-approved">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                Approved
+                                            </span>
                                         }
                                         else
                                         {
-                                            <button class="btn-primary" style="padding: 4px 12px; font-size: 0.85rem;" @onclick="() => OnApproveLog.InvokeAsync(log)">Approve</button>
+                                            <span class="status-badge status-pending">Pending</span>
                                         }
+                                    </div>
+                                }
+
+                                <div class="col-project">
+                                    <select class="inline-input w-100"
+                                            @bind="log.ProjectId"
+                                            @bind:after="() => OnLogModified.InvokeAsync(log)"
+                                            disabled="@log.IsApproved">
+                                        <option value="0">Select Project...</option>
+                                        @foreach (var proj in AvailableProjects)
+                                        {
+                                            <option value="@proj.ProjectId">@proj.ProjectName</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-workcode">
+                                    <input type="text" class="inline-input w-100"
+                                           @bind="log.WorkCode"
+                                           @bind:event="oninput"
+                                           @onchange="() => OnLogModified.InvokeAsync(log)"
+                                           placeholder="Code"
+                                           disabled="@log.IsApproved" />
+                                </div>
+
+                                <div class="col-comments">
+                                    <textarea class="inline-input w-100" rows="1"
+                                              @bind="log.Comment"
+                                              @bind:event="oninput"
+                                              @onchange="() => OnLogModified.InvokeAsync(log)"
+                                              placeholder="What did you work on?"
+                                              disabled="@log.IsApproved"></textarea>
+                                </div>
+
+                                <div class="col-time-wrapper">
+                                    <input type="number" class="inline-input col-time" step="0.5" min="0" max="24"
+                                           @bind="log.Hours"
+                                           @bind:event="oninput"
+                                           @onchange="() => OnLogModified.InvokeAsync(log)"
+                                           disabled="@log.IsApproved" />
+                                    <span class="hours-label"></span>
+                                </div>
+
+                                @if (IsManagerView)
+                                {
+                                    <div class="approval-actions">
+                                        <button class="btn-action btn-action-success @(log.IsApproved ? "active" : "")"
+                                                title="Approve"
+                                                @onclick="() => SetApprovalState(log, true)">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </button>
+
+                                        <button class="btn-action btn-action-danger @(!log.IsApproved ? "active" : "")"
+                                                title="Decline / Revoke"
+                                                @onclick="() => SetApprovalState(log, false)">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                        </button>
                                     </div>
                                 }
                             </div>

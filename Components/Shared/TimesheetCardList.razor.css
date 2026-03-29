@@ -1,4 +1,6 @@
-﻿/* --- Container & Cards --- */
+﻿/* =========================================
+   CONTAINER & DAILY HEADERS
+   ========================================= */
 .worklog-lists {
     display: flex;
     flex-direction: column;
@@ -14,7 +16,6 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* --- Daily Header --- */
 .daily-header {
     display: flex;
     justify-content: space-between;
@@ -49,7 +50,9 @@
     color: var(--accent-primary);
 }
 
-/* --- Rows --- */
+/* =========================================
+   TICKET ROWS & BASE INPUTS
+   ========================================= */
 .daily-rows {
     display: flex;
     flex-direction: column;
@@ -74,7 +77,6 @@
         background-color: var(--bg-hover);
     }
 
-/* --- Inputs --- */
 .inline-input {
     background-color: transparent;
     border: 1px solid transparent;
@@ -97,7 +99,21 @@
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
     }
 
-/* --- Specific Column Widths --- */
+/* =========================================
+   COLUMN SIZING UTILITIES
+   ========================================= */
+.w-100 {
+    width: 100%;
+}
+
+.col-status {
+    width: 100px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    margin-top: 4px; /* Aligns with input text */
+}
+
 .col-project {
     width: 180px;
     flex-shrink: 0;
@@ -119,7 +135,6 @@
     min-height: 38px;
 }
 
-/* --- Time & Action --- */
 .col-time-wrapper {
     display: flex;
     align-items: center;
@@ -128,18 +143,62 @@
     flex-shrink: 0;
 }
 
-.icon-clock-small {
-    width: 14px;
-    height: 14px;
-    color: var(--text-muted);
-}
-
 .col-time {
     width: 80px;
     text-align: right;
 }
 
-/* --- Buttons --- */
+.hours-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* =========================================
+   STATUS BADGES & LOCKED STATES
+   ========================================= */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.status-approved {
+    background-color: color-mix(in srgb, var(--accent-success) 15%, transparent);
+    color: var(--accent-success);
+    border: 1px solid color-mix(in srgb, var(--accent-success) 30%, transparent);
+}
+
+.status-pending {
+    background-color: color-mix(in srgb, var(--text-muted) 15%, transparent);
+    color: var(--text-muted);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 30%, transparent);
+}
+
+.inline-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--text-muted);
+}
+
+.locked-row {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+    .locked-row:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+/* =========================================
+   STANDARD & APPROVAL BUTTONS
+   ========================================= */
 .btn-icon {
     background-color: transparent;
     border: none;
@@ -166,30 +225,63 @@
         transition: transform 0.3s ease;
     }
 
-/* Primary "Save" button for the rows */
-.btn-primary {
-    background-color: var(--accent-primary);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+.approval-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
     margin-top: 4px;
 }
 
-    .btn-primary:hover {
-        background-color: var(--accent-hover);
+.btn-action {
+    background-color: transparent;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action-success {
+    color: var(--accent-success, #22c55e);
+    border: 1px solid var(--accent-success, #22c55e);
+}
+
+    .btn-action-success:hover {
+        background-color: color-mix(in srgb, var(--accent-success) 10%, transparent);
+        transform: scale(1.05);
+    }
+
+    .btn-action-success.active {
+        background-color: var(--accent-success, #22c55e);
+        color: white;
+    }
+
+.btn-action-danger {
+    color: var(--accent-danger, #f43f5e);
+    border: 1px solid var(--accent-danger, #f43f5e);
+}
+
+    .btn-action-danger:hover {
+        background-color: color-mix(in srgb, var(--accent-danger) 10%, transparent);
+        transform: scale(1.05);
+    }
+
+    .btn-action-danger.active {
+        background-color: var(--accent-danger, #f43f5e);
+        color: white;
     }
 
 /* --- Hide Number Input Spinners --- */
-/* Chrome, Safari, Edge, Opera */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* Firefox */
 input[type="number"] {
     -moz-appearance: textfield;
 }

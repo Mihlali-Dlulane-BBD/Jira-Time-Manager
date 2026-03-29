@@ -236,11 +236,12 @@ namespace Jira_Time_Manager.Components.Pages
             DirtyLogs.Clear();
         }
 
-        private async Task HandleApproveLog(WorkLog log)
+        private async Task HandleToggleApproval(WorkLog log)
         {
-            log.IsApproved = true;
             await Db.UpdateLogAsync(log);
         }
+
+
 
 
         // ==========================================

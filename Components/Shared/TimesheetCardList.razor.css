@@ -126,14 +126,30 @@
     margin-top: 4px;
 }
 
+/* --- Comments Column --- */
 .col-comments {
     flex-grow: 1;
-    resize: none;
-    overflow: hidden;
-    line-height: 1.5;
-    field-sizing: content;
-    min-height: 38px;
+    min-width: 0;
 }
+
+    .col-comments .inline-input {
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        resize: none; 
+        line-height: 1.5;
+        transition: all 0.2s ease;
+    }
+
+        .col-comments .inline-input:focus {
+            white-space: normal; 
+            overflow: hidden;
+            field-sizing: content; 
+            position: relative;
+            z-index: 10; 
+            background-color: var(--bg-surface);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+        }
 
 .col-time-wrapper {
     display: flex;

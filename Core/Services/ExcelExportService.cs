@@ -35,6 +35,7 @@ namespace Jira_Time_Manager.Core.Services
             var query = context.WorkLogs
                 .Include(w => w.Employee)
                 .Include(w => w.Project)
+                .ThenInclude(p => p.Client)
                 .Where(w => w.LogDate.Year == year && w.LogDate.Month == month);
 
             if (specificEmployeeId.HasValue && specificEmployeeId.Value > 0)
@@ -55,78 +56,142 @@ namespace Jira_Time_Manager.Core.Services
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add($"Timesheet_{year}_{month:D2}");
 
-            WriteHeaders(worksheet);
-            WriteDataRows(worksheet, logs);
+
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+
+            worksheet.Cell(1, 1).Value = "Staff Report";
+            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(1, 1).Style.Font.FontSize = 14;
+
+
+
+            worksheet.Cell(3, 1).Value = $"Date: {startDate:yyyy/MM/dd}";
+            worksheet.Cell(4, 1).Value = $"Date: {endDate:yyyy/MM/dd}";
+            worksheet.Range(3, 1, 4, 1).Style.Font.Bold = true;
+
+
+            WriteReportHierarchy(worksheet, logs, 6);
 
             worksheet.Columns().AdjustToContents();
 
             return workbook;
         }
 
-        private void WriteHeaders(IXLWorksheet worksheet)
+        private void WriteHeaders(IXLWorksheet worksheet, int row)
         {
             var headers = new[] { "DESCRIPTION", "STAFF NO.", "STAFF NAME", "WORK CODE", "COMMENT", "REF NO.", "DATE", "HOURS", "APPROVED" };
 
             for (int i = 0; i < headers.Length; i++)
             {
-                worksheet.Cell(1, i + 1).Value = headers[i];
+                worksheet.Cell(row, i + 1).Value = headers[i];
             }
 
-            var headerRow = worksheet.Range(1, 1, 1, headers.Length);
+            var headerRow = worksheet.Range(row, 1, row, headers.Length);
             headerRow.Style.Font.Bold = true;
             headerRow.Style.Fill.BackgroundColor = XLColor.LightGray;
+            headerRow.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
         }
 
-        private void WriteDataRows(IXLWorksheet worksheet, List<WorkLog> logs)
+
+        private void WriteReportHierarchy(IXLWorksheet worksheet, List<WorkLog> logs, int startingRow)
         {
-            int currentRow = 2;
+            int currentRow = startingRow;
 
-            var groupedLogs = logs.GroupBy(l => l.Employee);
 
-            foreach (var group in groupedLogs)
+            var logsByEmployee = logs.GroupBy(l => l.Employee);
+
+            foreach (var empGroup in logsByEmployee)
             {
-                var employee = group.Key;
+                var employee = empGroup.Key;
+                if (employee == null) continue;
+
+                WriteHeaders(worksheet, currentRow);
+                currentRow++;
 
 
-                if (employee != null)
+                worksheet.Cell(currentRow, 1).Value = $"User: {employee.FirstName} {employee.LastName}";
+                worksheet.Cell(currentRow, 2).Value = employee.StaffNo;
+                worksheet.Range(currentRow, 1, currentRow, 2).Style.Font.Bold = true;
+                currentRow++;
+
+
+                var logsByClient = empGroup.GroupBy(l => l.Project?.Client);
+                foreach (var clientGroup in logsByClient)
                 {
+                    var client = clientGroup.Key;
+                    string clientName = client?.ClientName ?? "Unassigned Client";
 
-                    var totalHours = group.Sum(l => l.Hours);
+                    worksheet.Cell(currentRow, 1).Value = $"Client: {clientName}";
+                    worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                    worksheet.Cell(currentRow, 1).Style.Font.Italic = true;
+                    currentRow++;
 
 
-                    var headerRange = worksheet.Range(currentRow, 1, currentRow, 9);
-                    headerRange.Merge();
+                    var logsByProject = clientGroup.GroupBy(l => l.Project);
+                    foreach (var projGroup in logsByProject)
+                    {
+                        var project = projGroup.Key;
+                        string projectName = project?.ProjectName ?? "Unassigned Project";
 
-                    headerRange.Value = $"👤 EMPLOYEE: {employee.FirstName} {employee.LastName}   |   STAFF NO: {employee.StaffNo}   |   TOTAL HOURS: {totalHours:0.0}";
+                        worksheet.Cell(currentRow, 1).Value = $"Project: {projectName}";
+                        worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                        currentRow++;
 
 
-                    headerRange.Style.Font.Bold = true;
-                    headerRange.Style.Font.FontColor = XLColor.White;
-                    headerRange.Style.Fill.BackgroundColor = XLColor.SlateGray;
-                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                    headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                        foreach (var log in projGroup)
+                        {
+                            worksheet.Cell(currentRow, 1).Value = log.Description;
+                            worksheet.Cell(currentRow, 2).Value = log.Employee?.StaffNo ?? "";
+                            worksheet.Cell(currentRow, 3).Value = $"{log.Employee?.FirstName} {log.Employee?.LastName}".Trim();
+                            worksheet.Cell(currentRow, 4).Value = log.WorkCode;
+                            worksheet.Cell(currentRow, 5).Value = log.Comment;
+                            worksheet.Cell(currentRow, 6).Value = log.ReferenceNumber;
+                            worksheet.Cell(currentRow, 7).Value = log.LogDate.ToString("yyyy/MM/dd");
+                            worksheet.Cell(currentRow, 8).Value = log.Hours;
+                            worksheet.Cell(currentRow, 9).Value = log.IsApproved ? "Yes" : "No";
 
+                            currentRow++;
+                        }
+
+
+                        var projectTotal = projGroup.Sum(l => l.Hours);
+                        worksheet.Cell(currentRow, 1).Value = $"Project Total: {projectName}";
+                        worksheet.Cell(currentRow, 8).Value = projectTotal; 
+                        
+                        var projectTotalRange = worksheet.Range(currentRow, 1, currentRow, 9);
+                        projectTotalRange.Style.Font.Bold = true;
+                        projectTotalRange.Style.Fill.BackgroundColor = XLColor.LightGray; 
+                        currentRow++;
+                    }
+
+
+                    currentRow++; 
+
+                    var clientTotal = clientGroup.Sum(l => l.Hours);
+                    worksheet.Cell(currentRow, 1).Value = $"Client Total: {clientName}";
+                    worksheet.Cell(currentRow, 8).Value = clientTotal;
+
+                    var clientTotalRange = worksheet.Range(currentRow, 1, currentRow, 9);
+                    clientTotalRange.Style.Font.Bold = true;
+                    clientTotalRange.Style.Fill.BackgroundColor = XLColor.LightGray; 
                     currentRow++;
                 }
-
-
-                foreach (var log in group)
-                {
-                    worksheet.Cell(currentRow, 1).Value = log.Description;
-                    worksheet.Cell(currentRow, 2).Value = log.Employee?.StaffNo ?? "";
-                    worksheet.Cell(currentRow, 3).Value = $"{log.Employee?.FirstName} {log.Employee?.LastName}".Trim();
-                    worksheet.Cell(currentRow, 4).Value = log.WorkCode;
-                    worksheet.Cell(currentRow, 5).Value = log.Comment;
-                    worksheet.Cell(currentRow, 6).Value = log.ReferenceNumber;
-                    worksheet.Cell(currentRow, 7).Value = log.LogDate.ToString("yyyy/MM/dd");
-                    worksheet.Cell(currentRow, 8).Value = log.Hours;
-                    worksheet.Cell(currentRow, 9).Value = log.IsApproved ? "Yes" : "No";
-
-                    currentRow++;
-                }
-
 
                 currentRow++;
+
+                var userTotal = empGroup.Sum(l => l.Hours);
+                worksheet.Cell(currentRow, 1).Value = $"User Total: {employee.FirstName} {employee.LastName}";
+                worksheet.Cell(currentRow, 8).Value = userTotal;
+
+
+                var userTotalRange = worksheet.Range(currentRow, 1, currentRow, 9);
+                userTotalRange.Style.Font.Bold = true;
+                userTotalRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                userTotalRange.Style.Border.TopBorder = XLBorderStyleValues.Medium;
+
+                currentRow += 2;
             }
         }
     }

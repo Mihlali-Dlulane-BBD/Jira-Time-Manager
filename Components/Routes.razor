@@ -2,18 +2,26 @@
 @using Jira_Time_Manager.Components.Pages
 
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Program).Assembly">
+    <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
+                
                 <NotAuthorized>
-                    <RedirectToLogin />
+                    <p style="text-align:center; padding: 50px; color: var(--accent-danger);">
+                        You do not have permission to view this page.
+                    </p>
                 </NotAuthorized>
+
+                <Authorizing>
+                    <p style="text-align:center; padding: 50px;">Checking credentials...</p>
+                </Authorizing>
+
             </AuthorizeRouteView>
-            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(Layout.MainLayout)">
+            <LayoutView Layout="typeof(MainLayout)">
                 <p role="alert">Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>

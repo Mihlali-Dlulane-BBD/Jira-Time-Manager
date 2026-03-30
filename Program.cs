@@ -21,7 +21,19 @@ builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-builder.Services.AddAuthentication("Cookies").AddCookie();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "Cookies";
+    options.DefaultChallengeScheme = "Cookies";
+})
+.AddCookie("Cookies", options =>
+{
+    options.LoginPath = "/login"; 
+
+    options.AccessDeniedPath = "/login";
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddDbContextFactory<JiraTimeManagerDbContext>(options =>
@@ -31,7 +43,7 @@ builder.Services.AddScoped<IWorkLogHandler, WorkLogHandler>();
 
 builder.Services.AddScoped<IWorkLogParser, ExcelWorkLogParser>();
 builder.Services.AddScoped<IDataImportService, DataImportService>();
-builder.Services.AddScoped<IWorkLogExportService,ExcelExportService>();
+builder.Services.AddScoped<IWorkLogExportService, ExcelExportService>();
 
 builder.Services.AddHostedService<FolderScannerService>();
 
@@ -52,6 +64,9 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAntiforgery();
 
